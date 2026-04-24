@@ -113,36 +113,49 @@ function avancarFase() {
     mostrarFase("Final", resultadoFinal);
   }
 
-  // CAMPEÃO - agora sim vai pro slide final
   else if (faseAtual === 4) {
 
-    // paro o som do mata-mata
-    somMataMata.pause();
-    somMataMata.currentTime = 0;
+  // encerra áudio do mata-mata
+  somMataMata.pause();
+  somMataMata.currentTime = 0;
 
-    // começo o som do campeão
-    somCampeao.currentTime = 0;
-    somCampeao.play()
-      .then(() => console.log("Som do campeão tocando!"))
-      .catch(err => console.log("Erro ao tocar som:", err));
+  // toca áudio do campeão
+  somCampeao.currentTime = 0;
+  somCampeao.play()
+    .catch(err => console.log("Erro ao reproduzir áudio:", err));
 
-    const campeao = resultadoFinal[0].vencedor;
+  const final = resultadoFinal[0];
+  const campeao = final.vencedor;
 
-    // troco de tela
-    mostrarTela("telaFinal");
+  // envia resultado da final para API (requisito do desafio)
+  fetch("https://development-internship-api.geopostenergy.com/WorldCup/FinalResult", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "git-user": "igordesouzacordeiro18-svg"
+    },
+    body: JSON.stringify({
+      teamA: final.timeA.nome,
+      teamB: final.timeB.nome,
+      scoreA: final.golsA,
+      scoreB: final.golsB,
+      penaltyScoreA: final.penaltisA || 0,
+      penaltyScoreB: final.penaltisB || 0
+    })
+  });
 
-    // mostro o campeão
-    document.getElementById("campeao").innerHTML = `
-      <div class="card campeao-card">
-        <h1 style="font-size: 60px;">🏆 CAMPEÃO</h1>
-        <h2 style="font-size:40px; color: gold;">${campeao.nome}</h2>
-        <p style="font-size:18px;">Parabéns pela conquista!</p>
-      </div>
-    `;
+  mostrarTela("telaFinal");
 
-    // solto os confetes
-    criarConfete();
-  }
+  document.getElementById("campeao").innerHTML = `
+    <div class="card campeao-card">
+      <h1 style="font-size: 60px;">🏆 CAMPEÃO</h1>
+      <h2 style="font-size:40px; color: gold;">${campeao.nome}</h2>
+      <p style="font-size:18px;">Parabéns pela conquista!</p>
+    </div>
+  `;
+
+  criarConfete();
+}
 
   faseAtual++;
   atualizarBotao();

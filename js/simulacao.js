@@ -24,10 +24,11 @@ export function simularFaseDeGrupos(grupos) {
 
   return resultados;
 }
+
 export function calcularTabela(grupos, resultados) {
   const tabela = {};
 
-  // Inicializa tabela
+  // cria a estrutura inicial da tabela
   for (let grupo in grupos) {
     tabela[grupo] = grupos[grupo].map(time => ({
       nome: time.nome,
@@ -38,42 +39,50 @@ export function calcularTabela(grupos, resultados) {
     }));
   }
 
-  // Processa jogos
+  // passa por todos os jogos e soma os dados
   resultados.forEach(jogo => {
     const grupo = jogo.grupo;
 
     const timeA = tabela[grupo].find(t => t.nome === jogo.timeA.nome);
     const timeB = tabela[grupo].find(t => t.nome === jogo.timeB.nome);
 
-    // Gols
+    // soma gols
     timeA.golsPro += jogo.golsA;
     timeA.golsContra += jogo.golsB;
 
     timeB.golsPro += jogo.golsB;
     timeB.golsContra += jogo.golsA;
 
-    // Pontos
+    // define pontuação
     if (jogo.golsA > jogo.golsB) {
       timeA.pontos += 3;
     } else if (jogo.golsA < jogo.golsB) {
       timeB.pontos += 3;
     } else {
+      // empate
       timeA.pontos += 1;
       timeB.pontos += 1;
     }
   });
 
-  // Calcula saldo
+  // calcula saldo e ordena
   for (let grupo in tabela) {
+
     tabela[grupo].forEach(time => {
       time.saldo = time.golsPro - time.golsContra;
     });
 
-   tabela[grupo].sort((a, b) => 
-    b.pontos - a.pontos ||
-    b.saldo - a.saldo ||
-    b.golsPro - a.golsPro
-  );
+    // ordena por:
+    // 1. pontos
+    // 2. saldo de gols
+    // 3. gols pró
+    // 4. sorteio (pra desempate total)
+    tabela[grupo].sort((a, b) => 
+      b.pontos - a.pontos ||
+      b.saldo - a.saldo ||
+      b.golsPro - a.golsPro ||
+      Math.random() - 0.5
+    );
   }
 
   return tabela;
@@ -97,19 +106,38 @@ export function gerarOitavas(tabela) {
 
 export function simularMataMata(confrontos) {
   return confrontos.map(jogo => {
+
     let golsA = Math.floor(Math.random() * 5);
     let golsB = Math.floor(Math.random() * 5);
 
-    // Evita empate (mata-mata não pode empatar)
-    while (golsA === golsB) {
-      golsB = Math.floor(Math.random() * 5);
+    let penaltisA = 0;
+    let penaltisB = 0;
+    let vencedor;
+
+    // se empatar no tempo normal → vai pros pênaltis
+    if (golsA === golsB) {
+
+      penaltisA = Math.floor(Math.random() * 5);
+      penaltisB = Math.floor(Math.random() * 5);
+
+      // não pode empatar nos pênaltis
+      while (penaltisA === penaltisB) {
+        penaltisB = Math.floor(Math.random() * 5);
+      }
+
+      vencedor = penaltisA > penaltisB ? jogo.timeA : jogo.timeB;
+
+    } else {
+      vencedor = golsA > golsB ? jogo.timeA : jogo.timeB;
     }
 
     return {
       ...jogo,
       golsA,
       golsB,
-      vencedor: golsA > golsB ? jogo.timeA : jogo.timeB
+      penaltisA,
+      penaltisB,
+      vencedor
     };
   });
 }

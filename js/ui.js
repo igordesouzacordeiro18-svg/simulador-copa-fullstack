@@ -41,13 +41,31 @@ export function mostrarFase(nomeFase, jogos) {
     <div class="card">
       <h3>${nomeFase}</h3>
 
-      ${jogos.map(jogo => `
-        <p>
-          ⚽ ${jogo.timeA.nome} 
-          <strong>${jogo.golsA} x ${jogo.golsB}</strong> 
-          ${jogo.timeB.nome}
-        </p>
-      `).join("")}
+      ${jogos.map(jogo => {
+
+        // se teve empate → mostra pênaltis
+        if (jogo.golsA === jogo.golsB) {
+          return `
+            <p>
+              ⚽ ${jogo.timeA.nome} 
+              <strong>${jogo.golsA} x ${jogo.golsB}</strong> 
+              ${jogo.timeB.nome}
+              <br>
+              🥅 Pênaltis: <strong>${jogo.penaltisA} x ${jogo.penaltisB}</strong>
+            </p>
+          `;
+        }
+
+        // jogo normal
+        return `
+          <p>
+            ⚽ ${jogo.timeA.nome} 
+            <strong>${jogo.golsA} x ${jogo.golsB}</strong> 
+            ${jogo.timeB.nome}
+          </p>
+        `;
+
+      }).join("")}
 
     </div>
   `;
