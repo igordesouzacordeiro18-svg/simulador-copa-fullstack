@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Copa do Mundo</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Tela inicial -->
+  <div id="telaInicio" class="tela ativa">
+    <h1>Simulador de Copa do Mundo 🏆</h1>
+    <button class="botao-start" onclick="iniciar()">START 🚀</button>
+  </div>
+
+  <!-- Tela da fase de grupos -->
+  <div id="telaGrupos" class="tela">
+    <h2 class="titulo-secao">🏆 Fase de Grupos</h2>
+
+    <!-- GRUPOS -->
+    <h3>Grupos</h3>
+    <div id="grupos"></div>
+
+    <!-- JOGOS -->
+    <h3>Jogos</h3>
+    <div id="jogos"></div>
+
+    <!-- CLASSIFICAÇÃO -->
+    <h3>Classificação</h3>
+    <div id="tabela"></div>
+
+    <button class="botao-avancar" onclick="avancarFase()">
+      Avançar para Oitavas ▶️
+    </button>
+  </div>
+
+  <!-- Tela do mata-mata -->
+  <div id="telaMataMata" class="tela">
+    <h2 class="titulo-secao">⚔️ Mata-Mata</h2>
+    <div id="mataMata"></div>
+    <button class="botao-avancar" onclick="avancarFase()">Avançar Fase ▶️</button>
+  </div>
+
+  <!-- Tela final -->
+  <div id="telaFinal" class="tela">
+    <h2 class="titulo-secao">🏆 Final</h2>
+    <div id="campeao"></div>
+  </div>
+
+  <!-- Script principal -->
+  <script type="module" src="js/main.js"></script>
+
+</body>
+</html>
