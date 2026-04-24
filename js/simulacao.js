@@ -1,14 +1,13 @@
 import { simularJogo } from "./jogos.js";
 
-// Simula todos os jogos da fase de grupos
+// Simula todos os jogos da fase de grupos (todos contra todos)
 export function simularFaseDeGrupos(grupos) {
   const resultados = [];
 
-  // Percorre cada grupo (A até H)
   for (let grupo in grupos) {
     let times = grupos[grupo];
 
-    // Todos contra todos dentro do grupo
+    // Gera confrontos dentro do grupo
     for (let i = 0; i < times.length; i++) {
       for (let j = i + 1; j < times.length; j++) {
 
@@ -28,7 +27,7 @@ export function simularFaseDeGrupos(grupos) {
 export function calcularTabela(grupos, resultados) {
   const tabela = {};
 
-  // cria a estrutura inicial da tabela
+  // Inicializa estrutura da tabela por grupo
   for (let grupo in grupos) {
     tabela[grupo] = grupos[grupo].map(time => ({
       nome: time.nome,
@@ -39,45 +38,38 @@ export function calcularTabela(grupos, resultados) {
     }));
   }
 
-  // passa por todos os jogos e soma os dados
+  // Atualiza estatísticas com base nos jogos
   resultados.forEach(jogo => {
     const grupo = jogo.grupo;
 
     const timeA = tabela[grupo].find(t => t.nome === jogo.timeA.nome);
     const timeB = tabela[grupo].find(t => t.nome === jogo.timeB.nome);
 
-    // soma gols
     timeA.golsPro += jogo.golsA;
     timeA.golsContra += jogo.golsB;
 
     timeB.golsPro += jogo.golsB;
     timeB.golsContra += jogo.golsA;
 
-    // define pontuação
+    // Define pontuação
     if (jogo.golsA > jogo.golsB) {
       timeA.pontos += 3;
     } else if (jogo.golsA < jogo.golsB) {
       timeB.pontos += 3;
     } else {
-      // empate
       timeA.pontos += 1;
       timeB.pontos += 1;
     }
   });
 
-  // calcula saldo e ordena
+  // Calcula saldo e ordena classificação
   for (let grupo in tabela) {
-
     tabela[grupo].forEach(time => {
       time.saldo = time.golsPro - time.golsContra;
     });
 
-    // ordena por:
-    // 1. pontos
-    // 2. saldo de gols
-    // 3. gols pró
-    // 4. sorteio (pra desempate total)
-    tabela[grupo].sort((a, b) => 
+    // Critérios de desempate
+    tabela[grupo].sort((a, b) =>
       b.pontos - a.pontos ||
       b.saldo - a.saldo ||
       b.golsPro - a.golsPro ||
@@ -89,6 +81,7 @@ export function calcularTabela(grupos, resultados) {
 }
 
 export function gerarOitavas(tabela) {
+  // Cruzamento padrão da fase de oitavas
   return [
     { timeA: tabela["A"][0], timeB: tabela["B"][1] },
     { timeA: tabela["B"][0], timeB: tabela["A"][1] },
@@ -106,7 +99,6 @@ export function gerarOitavas(tabela) {
 
 export function simularMataMata(confrontos) {
   return confrontos.map(jogo => {
-
     let golsA = Math.floor(Math.random() * 5);
     let golsB = Math.floor(Math.random() * 5);
 
@@ -114,13 +106,13 @@ export function simularMataMata(confrontos) {
     let penaltisB = 0;
     let vencedor;
 
-    // se empatar no tempo normal → vai pros pênaltis
+    // Caso de empate: decisão por pênaltis
     if (golsA === golsB) {
 
       penaltisA = Math.floor(Math.random() * 5);
       penaltisB = Math.floor(Math.random() * 5);
 
-      // não pode empatar nos pênaltis
+      // garante vencedor nos pênaltis
       while (penaltisA === penaltisB) {
         penaltisB = Math.floor(Math.random() * 5);
       }
@@ -143,10 +135,12 @@ export function simularMataMata(confrontos) {
 }
 
 export function proximaFase(jogos) {
+  // Extrai os vencedores da fase atual
   const classificados = jogos.map(jogo => jogo.vencedor);
 
   const confrontos = [];
 
+  // Monta novos confrontos em pares
   for (let i = 0; i < classificados.length; i += 2) {
     confrontos.push({
       timeA: classificados[i],

@@ -1,5 +1,7 @@
 export function mostrarJogos(resultados) {
+  // Renderiza os jogos da fase atual
   const div = document.getElementById("jogos");
+
   div.innerHTML = "";
 
   resultados.forEach(jogo => {
@@ -12,7 +14,9 @@ export function mostrarJogos(resultados) {
 }
 
 export function mostrarTabela(tabela) {
+  // Renderiza a classificação por grupos
   const div = document.getElementById("tabela");
+
   div.innerHTML = "";
 
   for (let grupo in tabela) {
@@ -35,6 +39,7 @@ export function mostrarTabela(tabela) {
 }
 
 export function mostrarFase(nomeFase, jogos) {
+  // Renderiza fases do mata-mata (oitavas, quartas, semi e final)
   const div = document.getElementById("mataMata");
 
   div.innerHTML += `
@@ -43,7 +48,7 @@ export function mostrarFase(nomeFase, jogos) {
 
       ${jogos.map(jogo => {
 
-        // se teve empate → mostra pênaltis
+        // Caso de empate: exibe pênaltis
         if (jogo.golsA === jogo.golsB) {
           return `
             <p>
@@ -56,7 +61,7 @@ export function mostrarFase(nomeFase, jogos) {
           `;
         }
 
-        // jogo normal
+        // Jogo decidido no tempo normal
         return `
           <p>
             ⚽ ${jogo.timeA.nome} 
@@ -64,7 +69,6 @@ export function mostrarFase(nomeFase, jogos) {
             ${jogo.timeB.nome}
           </p>
         `;
-
       }).join("")}
 
     </div>

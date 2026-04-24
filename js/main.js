@@ -14,6 +14,7 @@ import {
   mostrarFase
 } from "./ui.js";
 
+// Sons do sistema
 const somFundo = new Audio("assets/sounds/whistle.mp3");
 somFundo.loop = true;
 
@@ -22,6 +23,7 @@ const somCampeao = new Audio("assets/sounds/champion.mp3");
 const somMataMata = new Audio("/assets/sounds/mata-mata.mp3");
 somMataMata.loop = true;
 
+// Estado global da simulação
 let gruposGlobais = {};
 let tabelaGlobal;
 let resultadosOitavas;
@@ -33,7 +35,7 @@ let faseAtual = 0;
 async function iniciar() {
   console.log("INICIOU O JOGO");
 
-   // COMEÇA O SOM
+  // Inicia trilha sonora da fase de grupos
   somFundo.currentTime = 0;
   somFundo.play().catch(err => console.log(err));
 
@@ -65,14 +67,12 @@ function avancarFase() {
     return;
   }
 
-  // OITAVAS - aqui começa o mata-mata e a música nova
+  // Oitavas de final (início do mata-mata)
   if (faseAtual === 0) {
 
-    // paro o som da fase de grupos
     somFundo.pause();
     somFundo.currentTime = 0;
 
-    // começo o som do mata-mata (só uma vez)
     somMataMata.currentTime = 0;
     somMataMata.play().catch(err => console.log(err));
 
@@ -85,83 +85,78 @@ function avancarFase() {
     mostrarFase("Oitavas de Final", resultadosOitavas);
   }
 
-  // QUARTAS - só continua normalmente
+  // Quartas de final
   else if (faseAtual === 1) {
-
     const quartas = proximaFase(resultadosOitavas);
     resultadosQuartas = simularMataMata(quartas);
 
     mostrarFase("Quartas de Final", resultadosQuartas);
   }
 
-  // SEMIFINAL - mesma coisa, segue o fluxo
+  // Semifinal
   else if (faseAtual === 2) {
-
     const semi = proximaFase(resultadosQuartas);
     resultadosSemi = simularMataMata(semi);
 
     mostrarFase("Semifinal", resultadosSemi);
   }
 
-  // FINAL - ainda fica no slide 3 (não mostra campeão ainda)
+  // Final
   else if (faseAtual === 3) {
-
     const final = proximaFase(resultadosSemi);
     resultadoFinal = simularMataMata(final);
 
-    // mostro a final aqui mesmo
     mostrarFase("Final", resultadoFinal);
   }
 
+  // Encerramento + campeão
   else if (faseAtual === 4) {
 
-  // encerra áudio do mata-mata
-  somMataMata.pause();
-  somMataMata.currentTime = 0;
+    somMataMata.pause();
+    somMataMata.currentTime = 0;
 
-  // toca áudio do campeão
-  somCampeao.currentTime = 0;
-  somCampeao.play()
-    .catch(err => console.log("Erro ao reproduzir áudio:", err));
+    somCampeao.currentTime = 0;
+    somCampeao.play().catch(err => console.log(err));
 
-  const final = resultadoFinal[0];
-  const campeao = final.vencedor;
+    const final = resultadoFinal[0];
+    const campeao = final.vencedor;
 
-  // envia resultado da final para API (requisito do desafio)
-  fetch("https://development-internship-api.geopostenergy.com/WorldCup/FinalResult", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "git-user": "igordesouzacordeiro18-svg"
-    },
-    body: JSON.stringify({
-      teamA: final.timeA.nome,
-      teamB: final.timeB.nome,
-      scoreA: final.golsA,
-      scoreB: final.golsB,
-      penaltyScoreA: final.penaltisA || 0,
-      penaltyScoreB: final.penaltisB || 0
-    })
-  });
+    // Envio do resultado final para API (requisito do desafio)
+    fetch("https://development-internship-api.geopostenergy.com/WorldCup/FinalResult", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "git-user": "igordesouzacordeiro18-svg"
+      },
+      body: JSON.stringify({
+        teamA: final.timeA.nome,
+        teamB: final.timeB.nome,
+        scoreA: final.golsA,
+        scoreB: final.golsB,
+        penaltyScoreA: final.penaltisA || 0,
+        penaltyScoreB: final.penaltisB || 0
+      })
+    });
 
-  mostrarTela("telaFinal");
+    mostrarTela("telaFinal");
 
-  document.getElementById("campeao").innerHTML = `
-    <div class="card campeao-card">
-      <h1 style="font-size: 60px;">🏆 CAMPEÃO</h1>
-      <h2 style="font-size:40px; color: gold;">${campeao.nome}</h2>
-      <p style="font-size:18px;">Parabéns pela conquista!</p>
-    </div>
-  `;
+    document.getElementById("campeao").innerHTML = `
+      <div class="card campeao-card">
+        <h1 style="font-size: 60px;">🏆 CAMPEÃO</h1>
+        <h2 style="font-size:40px; color: gold;">${campeao.nome}</h2>
+        <p style="font-size:18px;">Parabéns pela conquista!</p>
+      </div>
+    `;
 
-  criarConfete();
-}
+    criarConfete();
+  }
 
   faseAtual++;
   atualizarBotao();
 }
 
 function mostrarTela(id) {
+  // Controla navegação entre telas do sistema
   const telas = document.querySelectorAll(".tela");
 
   telas.forEach(tela => {
@@ -194,6 +189,7 @@ function atualizarBotao() {
 }
 
 function criarConfete() {
+  // Efeito visual de celebração do campeão
   for (let i = 0; i < 80; i++) {
     const confete = document.createElement("div");
     confete.classList.add("confete");
@@ -208,7 +204,7 @@ function criarConfete() {
   }
 }
 
-// Torna a função acessível no HTML
+// Exposição das funções para o HTML
 window.iniciar = iniciar;
 window.avancarFase = avancarFase;
 
