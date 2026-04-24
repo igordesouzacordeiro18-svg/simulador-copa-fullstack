@@ -22,6 +22,21 @@ O objetivo do projeto é aplicar conceitos de desenvolvimento web, manipulação
 
 ---
 
+## ▶️ Como executar o projeto
+
+1. Clone o repositório:
+```bash
+git clone https://github.com/igordesouzacordeiro18-svg/simulador-copa-fullstack.git
+```
+
+2. Acesse a pasta do projeto:
+```bash
+cd simulador-copa-fullstack
+```
+
+3. Abra o arquivo `index.html` no navegador  
+ou utilize a extensão **Live Server** no VS Code para melhor experiência.
+
 ## 🛠️ Tecnologias utilizadas
 
 - HTML5  
